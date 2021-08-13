@@ -1,0 +1,293 @@
+---
+title: "Spikin、IS的QC分析(20201206-Titration版)"
+author: "林凯"
+date: "`r Sys.Date()`"
+CJKmainfont: Microsoft YaHei
+output:
+  html_document:
+    theme: cerulean      #样式
+    # css: css/styles.css       #加入额外的CSS
+    # df_print: paged           #表格的形式
+    fig_caption: TRUE         #图片设置
+    highlight: zenburn 
+    codefloding: 
+    number_sections: yes #目录自动编号
+    toc: true
+    toc_float: true #侧悬浮
+  pdf_document: 
+    includes:
+      in_header: header.tex
+    keep_tex: yes
+    latex_engine: xelatex
+  word_document: default
+    # highlight: "tango"
+    # keep_md: true
+  prettydoc::html_pretty:
+    theme: cayman
+    highlight: vignette
+---
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(echo = TRUE,
+                      fig.showtext = TRUE, 
+                      fig.align='center',
+                      message=FALSE, 
+                      warning=FALSE)
+library(ggplot2)
+library(ggrepel)
+library(tidyquant)
+library(grid)
+library(plotly)
+library(eoffice)
+
+# knitr::opts_chunk$set(
+#   # eval=TRUE, #在块中运行代码(default = TRUE)
+#   # tidy=FALSE, #是否整理代码
+#   # prompt=TRUE, #代码是否添加引导符’>‘
+#   # highlight=TRUE, #高亮显示源码 (default = TRUE)
+#   # comment="Result:", #结果的每一行加前缀(default = ‘##’)
+#   # echo=TRUE, #是否在输出中包含源代码
+#   # results="markup", #装裱markup、原样asis、隐藏hide、末尾hold
+#   # collapse=FALSE,#把所有的输出汇聚到单个块中(default = FALSE)
+#   warning=FALSE,#是否在输出中包含警告(default = TRUE)
+#   # error=TRUE, #是否在输出中包含错误信息
+#   # message=FALSE, #是否在输出中包含参考的信息
+#   # split=FALSE, #是否将R的输出分割成单独的文件
+#   # include=TRUE, #运行后是否在文档中显示块 (default = TRUE)
+#   # cache = TRUE, #对代码段打开缓存
+#   # cache.path="./cache_file/", #缓存结果的保存路径 (default = “cache/”)
+#   # fig.path="figure/prefix-", #图片路径，支持非前缀模式(‘figure/’)
+#   # fig.keep="high", #保存图形类型，高级high、不保存none’)、所有图形(‘all’)、第一张(‘first’)、最后一张(‘last’)
+#   fig.show="asis", #展示方式，紧随代码asis、最后统一hold、动画animate
+#   # fig.width=8, #可以用%表示
+#   # fig.height=6, #图片文件的宽、高(英寸2.54cm 为单位)
+#   # out.width=8,
+#   # out.height=6, #图片在输出文档中的宽、高
+#   fig.align="center" #对齐方式，不做调节(‘default’)、左(‘left’)、右(‘right’)、居中(‘center’)
+#   # interval=1 #动画参数，切换画面时间，单位为秒
+# )
+```
+
+# 阴离子
+
+## IS的CV情况(NEG)
+
+```{r eval=TRUE, echo=FALSE}
+
+func_getIsCV <- function(file_name, bat_no, no) {
+  b_data <-
+    data.frame(data.table::fread(
+      file_name,
+      sep = ",",
+      header = T
+    ))
+  
+  rownames(b_data) <- b_data[, 1]
+  b_data <- b_data[, -(1:2)]
+  str <- bat_no
+  
+  if (no != "") {
+    b_data <- b_data[, grep(no, colnames(b_data))]
+    str <- paste0(bat_no, no)
+  }
+  
+  b_data_t <- data.frame(t(b_data))
+  
+  
+  sub_data1 <- b_data_t[, "SP01"]
+  sub_data2 <- b_data_t[, "SP02"]
+  sub_data3 <- b_data_t[, "SP03"]
+  sub_data4 <- b_data_t[, "SP04"]
+  sub_data5 <- b_data_t[, "SP05"]
+  sub_data6 <- b_data_t[, "NB01"]
+  sub_data7 <- b_data_t[, "NB02"]
+  sub_data8 <- b_data_t[, "NB03"]
+  sub_data9 <- b_data_t[, "NB04"]
+  sub_data10 <- b_data_t[, "NB05"]
+  sub_data11 <- b_data_t[, "NB06"]
+  sub_data12 <- b_data_t[, "NB07"]
+  sub_data13 <- b_data_t[, "NB08"]
+  sub_data14 <- b_data_t[, "NB09"]
+  sub_data15 <- b_data_t[, "NB10"]
+  
+  SP01_cv_lot <- sd(sub_data1) / mean(sub_data1)
+  SP02_cv_lot <- sd(sub_data2) / mean(sub_data2)
+  SP03_cv_lot <- sd(sub_data3) / mean(sub_data3)
+  SP04_cv_lot <- sd(sub_data4) / mean(sub_data4)
+  SP05_cv_lot <- sd(sub_data5) / mean(sub_data5)
+  NB01_cv_lot <- sd(sub_data6) / mean(sub_data6)
+  NB02_cv_lot <- sd(sub_data7) / mean(sub_data7)
+  NB03_cv_lot <- sd(sub_data8) / mean(sub_data8)
+  NB04_cv_lot <- sd(sub_data9) / mean(sub_data9)
+  NB05_cv_lot <- sd(sub_data10) / mean(sub_data10)
+  NB06_cv_lot <- sd(sub_data11) / mean(sub_data11)
+  NB07_cv_lot <- sd(sub_data12) / mean(sub_data12)
+  NB08_cv_lot <- sd(sub_data13) / mean(sub_data13)
+  NB09_cv_lot <- sd(sub_data14) / mean(sub_data14)
+  NB10_cv_lot <- sd(sub_data15) / mean(sub_data15)
+  
+  cv_bat <-
+    data.frame(cbind(
+      c(
+          "SP01",
+          "SP02",
+          "SP03",
+          "SP04",
+          "SP05",
+          "NB01",
+          "NB02",
+          "NB03",
+          "NB04",
+          "NB05",
+          "NB06",
+          "NB07",
+          "NB08",
+          "NB09",
+          "NB10"
+      ),
+      c(
+          SP01_cv_lot,
+          SP02_cv_lot,
+          SP03_cv_lot,
+          SP04_cv_lot,
+          SP05_cv_lot,
+          NB01_cv_lot,
+          NB02_cv_lot,
+          NB03_cv_lot,
+          NB04_cv_lot,
+          NB05_cv_lot,
+          NB06_cv_lot,
+          NB07_cv_lot,
+          NB08_cv_lot,
+          NB09_cv_lot,
+          NB10_cv_lot
+      ),
+      rep(str, time = 7)
+    ))
+  
+  return(cv_bat)
+}
+
+file_name <- "../neg/final/lot1/final_is_area.csv"
+cv_bat_1_1 <- func_getIsCV(file_name, "1", "_202009001Y_")
+cv_bat_1_2 <- func_getIsCV(file_name, "1", "_202010001Y_")
+cv_bat_1_3 <- func_getIsCV(file_name, "1", "_202010002L_")
+cv_bat_1_4 <- func_getIsCV(file_name, "1", "_202011001L_")
+cv_bat_1 <- func_getIsCV(file_name, "1", "")
+
+
+cv_bat <- rbind(cv_bat_1_1, cv_bat_1_2, cv_bat_1_3, cv_bat_1_4, cv_bat_1)
+
+# cv_bat <- rbind(cv_bat_1, cv_bat_2, cv_bat_3, cv_bat_4)
+colnames(cv_bat) <- c("IS", "CV", "Bat")
+cv_bat <- transform(cv_bat, IS = factor(
+  IS,
+  levels = c(
+          "SP01",
+          "SP02",
+          "SP03",
+          "SP04",
+          "SP05",
+          "NB01",
+          "NB02",
+          "NB03",
+          "NB04",
+          "NB05",
+          "NB06",
+          "NB07",
+          "NB08",
+          "NB09",
+          "NB10"
+  )
+))
+
+cv_bat <- transform(cv_bat, CV = as.numeric(as.character(CV)))
+cv_bat <- transform(cv_bat, CV = round(CV*100, 1))
+library(ggplot2)
+library(ggrepel)
+library(tidyquant)
+p <- ggplot(cv_bat, aes(x=IS, y=CV, fill=Bat))
+p <- p + geom_bar(stat ="identity",width = 0.8,position = "dodge") +
+  geom_text(aes(label = CV),position=position_dodge(width = 0.9),size = 3,vjust = -0.25)+
+  # scale_fill_manual(values = c("red","blue"))+
+  labs(title = "阴离子IS", y = "CV(%)")+
+  theme_bw() +
+  theme(legend.direction = "vertical",
+        legend.position = "right",
+        legend.title = element_text(size=8),
+        legend.text = element_text(size=8))
+
+
+ggplotly(p)
+
+```
+
+
+## 个体样本和NP-Mean的关系(NEG)
+
+```{r eval=TRUE, echo=FALSE, results='asis'}
+
+func_plotScatter <- function(file_name, bat_no, out_file_name){
+  is_area <-
+    data.frame(
+      data.table::fread(
+        file_name,
+        sep = ",",
+        header = T
+      )
+    )
+  is <- is_area[, 1]
+  is_area <- is_area[,-2]
+  npooled_column <- grep("_N_", colnames(is_area))
+  is_area <-
+    transform(is_area, Npooled_mean = rowMeans(data.frame(is_area[, npooled_column])))
+  is_area <- is_area[order(is_area$Npooled_mean), ]
+
+  df <- log10(is_area[, -c(1)])
+  df <- cbind(is, df)
+  names <- colnames(df)
+  
+  file.copy("template.pptx", out_file_name)
+  for (i in 2:ncol(df)){
+    name = names[i]
+    # cat("\n")
+    # cat("###", name, "\n")
+    p = ggplot(data = df,  aes_string(x = "Npooled_mean" , y = name, colour = "is")) +
+      geom_point(size=4,alpha=0.6)  +  stat_smooth(method = 'lm', formula = y ~ x, se = FALSE, colour = 2, size = 0.5)+
+      geom_text(aes(label = is),nudge_x=0.1,nudge_y=0.1)+
+      geom_abline(intercept=0,slope=1, colour="#990000", linetype="dashed" )+
+      labs(x= "log10(Npooled_mean)", y = paste0("log10(",name, ")"), title = paste0("阴离子-bat", bat_no))  +
+      theme_bw()+
+      theme(legend.direction = "vertical",
+            legend.position = "right",
+            legend.title = element_text(size=8),
+            legend.text = element_text(size=8))
+    
+    topptx(p, filename =out_file_name, 
+       width = 10, height =6,
+       append = TRUE)
+    
+      # scale_x_continuous(breaks = seq(4, 8, 0.5), limits = c(4, 8)) +
+      # scale_y_continuous(breaks = seq(4, 8, 0.5), limits = c(4, 8))
+    # cat("\n")
+  }
+}
+
+file_name <- "../neg/final/lot1/final_is_area.csv"
+out_file_name <- "spikin(log10)_1.pptx"
+func_plotScatter(file_name, "1", out_file_name)
+
+
+# file_name <- "./20201126/neg/final/lot2/final_is_area.csv"
+# func_plotScatter(file_name, "2")
+# 
+# file_name <- "./20201126/neg/final/lot3/final_is_area.csv"
+# func_plotScatter(file_name, "3")
+# 
+# file_name <- "./20201126/neg/final/lot4/final_is_area.csv"
+# func_plotScatter(file_name, "4")
+
+```
+[spikin(log10)_1](`r out_file_name `)
+
