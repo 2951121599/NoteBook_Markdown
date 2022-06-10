@@ -1,0 +1,326 @@
+---
+title: "ms01_ms03_data2"
+author: "崔腾松"
+date: "2022/6/10"
+output:
+  html_document:
+    theme: cerulean  # 样式
+    df_print: paged  # 表格的形式
+    fig_caption: TRUE  # 图片设置
+    highlight: zenburn  # 高亮
+    toc: yes  # 输出目录
+    number_sections: yes  # 目录自动编号
+    toc_float: true  # 侧悬浮
+    # fig.width 7 由代码块⽣成的图表的宽度，英寸  
+    # fig.height 7 由代码块⽣成的图表的高度，英寸
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+	echo = FALSE,  # 不显示代码
+	message = FALSE,
+	warning = FALSE
+)
+
+source("C:\\r_workspace\\220609_102950-ms01-ms03\\common_function.R")
+```
+
+
+```{r}
+select_feature <-
+  c("DS03", "DS05", "DS09", "DS11", "X001", "X006", "X010", "X011", "X012", "X017", "X019", "X020", "X022", "X042", "X043", "X055", "X068", "X070", "X081", "X082", "X133", "X136", "X139", "X141", "X144", "X152", "X155", "X160", "X166", "X171", "X178", "X183", "X188", "X196", "X278", "X279", "X281", "X283", "X284", "X285", "X286", "X287", "X289", "X292", "X293", "X297", "X304", "X312", "X314", "X315", "X316")
+
+# MS01 原始峰面积
+origin_ms01_area <- data.frame(data.table::fread("MS01@20220602_area_merge.csv"))
+origin_ms01_area = origin_ms01_area[order(origin_ms01_area$feature), ]
+origin_ms01_area <- origin_ms01_area[which(origin_ms01_area$feature %in% select_feature), -1]
+origin_ms01_area <- cbind(select_feature, origin_ms01_area)
+
+# MS03 原始峰面积
+origin_ms03_area <- data.frame(data.table::fread("MS03@20220602_02_area_merge.csv"))
+origin_ms03_area = origin_ms03_area[order(origin_ms03_area$feature), ]
+origin_ms03_area <- origin_ms03_area[which(origin_ms03_area$feature %in% select_feature), -1]
+origin_ms03_area <- cbind(select_feature, origin_ms03_area)
+
+# MS01 ratio峰面积
+ratio_ms01_area <- data.frame(data.table::fread("ratio_nm_MS01@20220602_area_merge.csv"))
+ratio_ms01_area = ratio_ms01_area[order(ratio_ms01_area$feature), ]
+ratio_ms01_area <- ratio_ms01_area[which(ratio_ms01_area$feature %in% select_feature), -1]
+ratio_ms01_area <- cbind(select_feature, ratio_ms01_area)
+
+# MS03 ratio峰面积
+ratio_ms03_area <- data.frame(data.table::fread("ratio_nm_MS03@20220602_02_area_merge.csv"))
+ratio_ms03_area = ratio_ms03_area[order(ratio_ms03_area$feature), ]
+ratio_ms03_area <- ratio_ms03_area[which(ratio_ms03_area$feature %in% select_feature), -1]
+ratio_ms03_area <- cbind(select_feature, ratio_ms03_area)
+```
+
+# MS01原始峰面积
+```{r}
+func_drawTable(origin_ms01_area)
+```
+
+# MS03原始峰面积
+```{r}
+func_drawTable(origin_ms03_area)
+```
+
+
+# 原始峰面积-MS01/MS03结果
+```{r}
+
+# origin_ms01_division_ms03
+numeric_origin_ms01_area <- as.data.frame(lapply(origin_ms01_area, as.numeric))
+numeric_origin_ms03_area <- as.data.frame(lapply(origin_ms03_area, as.numeric))
+
+origin_division_value <- round((numeric_origin_ms01_area / numeric_origin_ms03_area), 2)
+origin_division_value <- cbind(select_feature, origin_division_value)
+
+func_drawTable(origin_division_value)
+
+```
+
+
+# MS01 ratio峰面积
+```{r}
+
+func_drawTable(ratio_ms01_area)
+```
+
+# MS03 ratio峰面积
+```{r}
+
+func_drawTable(ratio_ms03_area)
+```
+
+
+
+# ratio峰面积-MS01/MS03结果
+```{r}
+
+# ratio_ms01_division_ms03
+numeric_ratio_ms01_area <- as.data.frame(lapply(ratio_ms01_area, as.numeric))
+numeric_ratio_ms03_area <- as.data.frame(lapply(ratio_ms03_area, as.numeric))
+
+ratio_division_value <- round((numeric_ratio_ms01_area / numeric_ratio_ms03_area), 2)
+ratio_division_value <- cbind(select_feature, ratio_division_value)
+
+func_drawTable(ratio_division_value)
+
+```
+
+
+
+# MS01 原始峰面积-QC_CV结果
+<strong style="color:red;">不合格离子对: X315(17.43)</strong>
+```{r}
+
+origin_ms01_area_QC_CV <- func_calQc_CV(origin_ms01_area, "_QC_MFE")
+origin_ms01_area_QC_CV <- cbind(select_feature, origin_ms01_area_QC_CV)
+
+func_drawTable(origin_ms01_area_QC_CV)
+
+```
+
+
+# MS03 原始峰面积-QC_CV结果
+<strong style="color:red;">不合格离子对: X070(22.78) X082(15.6)</strong>
+```{r}
+
+origin_ms03_area_QC_CV <- func_calQc_CV(origin_ms03_area, "_QC_MFE")
+origin_ms03_area_QC_CV <- cbind(select_feature, origin_ms03_area_QC_CV)
+
+func_drawTable(origin_ms03_area_QC_CV)
+
+```
+
+# MS01 ratio峰面积-QC_CV结果
+<strong style="color:red;">全部合格</strong>
+```{r}
+
+ratio_ms01_area_QC_CV <- func_calQc_CV(ratio_ms01_area, "_QC_MFE")
+ratio_ms01_area_QC_CV <- cbind(select_feature, ratio_ms01_area_QC_CV)
+
+func_drawTable(ratio_ms01_area_QC_CV)
+
+```
+
+# MS03 ratio峰面积-QC_CV结果
+<strong style="color:red;">全部合格</strong>
+```{r}
+
+ratio_ms03_area_QC_CV <- func_calQc_CV(ratio_ms03_area, "_QC_MFE")
+ratio_ms03_area_QC_CV <- cbind(select_feature, ratio_ms03_area_QC_CV)
+
+func_drawTable(ratio_ms03_area_QC_CV)
+
+```
+
+# 原始峰面积 绘制相关性图
+```{r}
+
+numeric_origin_ms01_area <- as.data.frame(lapply(origin_ms01_area, as.numeric))
+numeric_origin_ms03_area <- as.data.frame(lapply(origin_ms03_area, as.numeric))
+
+ms01_origin_QC = numeric_origin_ms01_area[, grep("_QC_MFE", colnames(numeric_origin_ms01_area))]
+ms03_origin_QC = numeric_origin_ms03_area[, grep("_QC_MFE", colnames(numeric_origin_ms03_area))]
+drawCorrPlot("origin_QC", ms01_origin_QC, ms03_origin_QC, "origin_QC", 1.1, 1.2, 1.0)
+
+ms01_origin_X = numeric_origin_ms01_area[, grep("X", colnames(numeric_origin_ms01_area))]
+ms03_origin_X = numeric_origin_ms03_area[, grep("X", colnames(numeric_origin_ms03_area))]
+drawCorrPlot("origin_X", ms01_origin_X, ms03_origin_X, "origin_X", 0.5, 0.8, 1.0)
+
+ms01_origin_SST = numeric_origin_ms01_area[, grep("SST", colnames(numeric_origin_ms01_area))]
+ms03_origin_SST = numeric_origin_ms03_area[, grep("SST", colnames(numeric_origin_ms03_area))]
+drawCorrPlot("origin_SST", ms01_origin_SST, ms03_origin_SST, "origin_SST", 0.9, 1.0, 1.0)
+
+```
+
+# ratio峰面积 绘制相关性图
+```{r}
+
+numeric_ratio_ms01_area <- as.data.frame(lapply(ratio_ms01_area, as.numeric))
+numeric_ratio_ms03_area <- as.data.frame(lapply(ratio_ms03_area, as.numeric))
+
+ms01_ratio_QC = numeric_ratio_ms01_area[, grep("_QC_MFE", colnames(numeric_ratio_ms01_area))]
+ms03_ratio_QC = numeric_ratio_ms03_area[, grep("_QC_MFE", colnames(numeric_ratio_ms03_area))]
+drawCorrPlot("ratio_QC", ms01_ratio_QC, ms03_ratio_QC, "ratio_QC", 1.1, 1.2, 1.0)
+
+ms01_ratio_X = numeric_ratio_ms01_area[, grep("X", colnames(numeric_ratio_ms01_area))]
+ms03_ratio_X = numeric_ratio_ms03_area[, grep("X", colnames(numeric_ratio_ms03_area))]
+drawCorrPlot("ratio_X", ms01_ratio_X, ms03_ratio_X, "ratio_X", 0.5, 0.8, 1.0)
+
+ms01_ratio_SST = numeric_ratio_ms01_area[, grep("SST", colnames(numeric_ratio_ms01_area))]
+ms03_ratio_SST = numeric_ratio_ms03_area[, grep("SST", colnames(numeric_ratio_ms03_area))]
+drawCorrPlot("ratio_SST", ms01_ratio_SST, ms03_ratio_SST, "ratio_SST", 0.9, 1.0, 1.0)
+
+```
+
+
+# 原始峰面积 两批次对应样本的相关性
+```{r}
+numeric_origin_ms01_area <- as.data.frame(lapply(origin_ms01_area, as.numeric))
+numeric_origin_ms03_area <- as.data.frame(lapply(origin_ms03_area, as.numeric))
+
+ms01_origin_QC = numeric_origin_ms01_area[, grep("_QC_MFE", colnames(numeric_origin_ms01_area))]
+ms03_origin_QC = numeric_origin_ms03_area[, grep("_QC_MFE", colnames(numeric_origin_ms03_area))]
+origin_QC_corr_data <- calc_corr(ms01_origin_QC, ms03_origin_QC)
+func_drawTable(origin_QC_corr_data)
+
+ms01_origin_X = numeric_origin_ms01_area[, grep("X", colnames(numeric_origin_ms01_area))]
+ms03_origin_X = numeric_origin_ms03_area[, grep("X", colnames(numeric_origin_ms03_area))]
+origin_X_corr_data <- calc_corr(ms01_origin_X, ms03_origin_X)
+func_drawTable(origin_X_corr_data)
+
+ms01_origin_SST = numeric_origin_ms01_area[, grep("SST", colnames(numeric_origin_ms01_area))]
+ms03_origin_SST = numeric_origin_ms03_area[, grep("SST", colnames(numeric_origin_ms03_area))]
+origin_SST_corr_data <- calc_corr(ms01_origin_SST, ms03_origin_SST)
+func_drawTable(origin_SST_corr_data)
+
+```
+
+
+# ratio峰面积 两批次对应样本的相关性
+```{r}
+numeric_ratio_ms01_area <- as.data.frame(lapply(ratio_ms01_area, as.numeric))
+numeric_ratio_ms03_area <- as.data.frame(lapply(ratio_ms03_area, as.numeric))
+
+ms01_ratio_QC = numeric_ratio_ms01_area[, grep("_QC_MFE", colnames(numeric_ratio_ms01_area))]
+ms03_ratio_QC = numeric_ratio_ms03_area[, grep("_QC_MFE", colnames(numeric_ratio_ms03_area))]
+
+
+ratio_QC_corr_data <- calc_corr(ms01_ratio_QC, ms03_ratio_QC)
+func_drawTable(ratio_QC_corr_data)
+
+ms01_ratio_X = numeric_ratio_ms01_area[, grep("X", colnames(numeric_ratio_ms01_area))]
+ms03_ratio_X = numeric_ratio_ms03_area[, grep("X", colnames(numeric_ratio_ms03_area))]
+ratio_X_corr_data <- calc_corr(ms01_ratio_X, ms03_ratio_X)
+func_drawTable(ratio_X_corr_data)
+
+ms01_ratio_SST = numeric_ratio_ms01_area[, grep("SST", colnames(numeric_ratio_ms01_area))]
+ms03_ratio_SST = numeric_ratio_ms03_area[, grep("SST", colnames(numeric_ratio_ms03_area))]
+ratio_SST_corr_data <- calc_corr(ms01_ratio_SST, ms03_ratio_SST)
+func_drawTable(ratio_SST_corr_data)
+
+```
+
+
+# 原始峰面积 从feature的角度看 相关性
+<strong style="color:red;">按照corr_cosine升序排列</strong>
+```{r}
+# 转置T
+numeric_origin_ms01_area <- as.data.frame(lapply(origin_ms01_area, as.numeric))
+numeric_origin_ms03_area <- as.data.frame(lapply(origin_ms03_area, as.numeric))
+
+
+ms01_origin_QC = numeric_origin_ms01_area[, grep("_QC_MFE", colnames(numeric_origin_ms01_area))]
+ms03_origin_QC = numeric_origin_ms03_area[, grep("_QC_MFE", colnames(numeric_origin_ms03_area))]
+ms01_origin_QC_t <- data.frame(t(ms01_origin_QC))
+ms03_origin_QC_t <- data.frame(t(ms03_origin_QC))
+colnames(ms01_origin_QC_t) <- select_feature
+colnames(ms03_origin_QC_t) <- select_feature
+origin_QC_corr_data_t <- calc_corr_t(ms01_origin_QC_t, ms03_origin_QC_t)
+origin_QC_corr_data_t <- origin_QC_corr_data_t[order(origin_QC_corr_data_t$corr_cosine), ]
+func_drawTable(origin_QC_corr_data_t)
+
+ms01_origin_X = numeric_origin_ms01_area[, grep("X", colnames(numeric_origin_ms01_area))]
+ms03_origin_X = numeric_origin_ms03_area[, grep("X", colnames(numeric_origin_ms03_area))]
+ms01_origin_X_t <- data.frame(t(ms01_origin_X))
+ms03_origin_X_t <- data.frame(t(ms03_origin_X))
+colnames(ms01_origin_X_t) <- select_feature
+colnames(ms03_origin_X_t) <- select_feature
+origin_X_corr_data_t <- calc_corr_t(ms01_origin_X_t, ms03_origin_X_t)
+origin_QC_corr_data_t <- origin_QC_corr_data_t[order(origin_QC_corr_data_t$corr_cosine), ]
+func_drawTable(origin_X_corr_data_t)
+
+ms01_origin_SST = numeric_origin_ms01_area[, grep("SST", colnames(numeric_origin_ms01_area))]
+ms03_origin_SST = numeric_origin_ms03_area[, grep("SST", colnames(numeric_origin_ms03_area))]
+ms01_origin_SST_t <- data.frame(t(ms01_origin_SST))
+ms03_origin_SST_t <- data.frame(t(ms03_origin_SST))
+colnames(ms01_origin_SST_t) <- select_feature
+colnames(ms03_origin_SST_t) <- select_feature
+origin_SST_corr_data_t <- calc_corr_t(ms01_origin_SST_t, ms03_origin_SST_t)
+origin_SST_corr_data_t <- origin_SST_corr_data_t[order(origin_SST_corr_data_t$corr_cosine), ]
+func_drawTable(origin_SST_corr_data_t)
+
+```
+
+# ratio峰面积 从feature的角度看 相关性
+<strong style="color:red;">按照corr_cosine升序排列</strong>
+```{r}
+# 转置T
+numeric_ratio_ms01_area <- as.data.frame(lapply(ratio_ms01_area, as.numeric))
+numeric_ratio_ms03_area <- as.data.frame(lapply(ratio_ms03_area, as.numeric))
+
+
+ms01_ratio_QC = numeric_ratio_ms01_area[, grep("_QC_MFE", colnames(numeric_ratio_ms01_area))]
+ms03_ratio_QC = numeric_ratio_ms03_area[, grep("_QC_MFE", colnames(numeric_ratio_ms03_area))]
+ms01_ratio_QC_t <- data.frame(t(ms01_ratio_QC))
+ms03_ratio_QC_t <- data.frame(t(ms03_ratio_QC))
+colnames(ms01_ratio_QC_t) <- select_feature
+colnames(ms03_ratio_QC_t) <- select_feature
+ratio_QC_corr_data_t <- calc_corr_t(ms01_ratio_QC_t, ms03_ratio_QC_t)
+ratio_QC_corr_data_t <- ratio_QC_corr_data_t[order(ratio_QC_corr_data_t$corr_cosine), ]
+func_drawTable(ratio_QC_corr_data_t)
+
+ms01_ratio_X = numeric_ratio_ms01_area[, grep("X", colnames(numeric_ratio_ms01_area))]
+ms03_ratio_X = numeric_ratio_ms03_area[, grep("X", colnames(numeric_ratio_ms03_area))]
+ms01_ratio_X_t <- data.frame(t(ms01_ratio_X))
+ms03_ratio_X_t <- data.frame(t(ms03_ratio_X))
+colnames(ms01_ratio_X_t) <- select_feature
+colnames(ms03_ratio_X_t) <- select_feature
+ratio_X_corr_data_t <- calc_corr_t(ms01_ratio_X_t, ms03_ratio_X_t)
+ratio_X_corr_data_t <- ratio_X_corr_data_t[order(ratio_X_corr_data_t$corr_cosine), ]
+func_drawTable(ratio_X_corr_data_t)
+
+ms01_ratio_SST = numeric_ratio_ms01_area[, grep("SST", colnames(numeric_ratio_ms01_area))]
+ms03_ratio_SST = numeric_ratio_ms03_area[, grep("SST", colnames(numeric_ratio_ms03_area))]
+ms01_ratio_SST_t <- data.frame(t(ms01_ratio_SST))
+ms03_ratio_SST_t <- data.frame(t(ms03_ratio_SST))
+colnames(ms01_ratio_SST_t) <- select_feature
+colnames(ms03_ratio_SST_t) <- select_feature
+ratio_SST_corr_data_t <- calc_corr_t(ms01_ratio_SST_t, ms03_ratio_SST_t)
+ratio_SST_corr_data_t <- ratio_SST_corr_data_t[order(ratio_SST_corr_data_t$corr_cosine), ]
+func_drawTable(ratio_SST_corr_data_t)
+
+```

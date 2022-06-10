@@ -346,8 +346,6 @@ b_data <- subset(b_data, F_fc > 1.2 | F_fc < 0.8)
 
 
 
-
-
 ### 移动列的位置
 
 ```R
@@ -2744,7 +2742,8 @@ mat1 <- data.frame(data.table::fread("SST.csv"))
 mat1 <- dplyr::filter(mat1, grepl('SP', feature))
 mat1 <- mat1[, -1]
 
-r <- cor(mat1)
+r <- cor(mat1, M)
+# print(cor(x, y, method = "pearson"))
 
 data.table::fwrite(
   data.frame(r),
