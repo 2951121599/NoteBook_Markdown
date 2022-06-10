@@ -1,25 +1,27 @@
-## Windows安装WSL 2 (Linux子系统)
+## Windows安装Ubuntu子系统
 
 ```shell
 ls | grep .ssh # error
 # 判断是否安装ssh服务
 ps -e|grep ssh
 
-# 新建一个项目路径 右击Git Bash Here 生成秘钥对
 ssh-keygen -t rsa -C "2951121599@qq.com"
 
 # Linux:
 ssh-keygen -t rsa -C "2951121599@qq.com"
 cd /home/kiral/.ssh/
 cat id_rsa.pub
+
+或者
+explorer.exe .
+打开这个目录 \\wsl$\Ubuntu\home\kiral\.ssh
 ```
 
 ```shell
-# id_rsa.pub
-ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQD0mh6M3yuvKUDK8kYrkFQ6zvmS/zktZvs0p6Vz5R0QGWcELdqj706Vx37fOWjYyTlKjuS3waWnHv8D0+2sAMbylkawv8Zkyco7llwsLpsil91A/gKDIe8icUZaVo6wIJogv5cI3RYnbWETE83xQeQjWSbHFmGUPV4HebloB26ZxwU5GsHONZxz7thrNdbTHfzxA2FS6Em3ETOyZjBWRFSxxW40sdpoqcIiwiEm+qqjKBOFufR+j08O7uBKzPG4rz+xxw/eGtXRNj0DjaR2JS/VcSjL11ZBlB/lNUpbcXHuq1VwxkPa1XQ6uPDnXnhjsq35sHkPwiMy6xLs/V8++0FcfLephDODiBW5yECQfIyGWrDcuQf1wXOSYGKokBULDgKvKG9cq4VpglEsHBH67FXRFgfeB/hxKmx2IU4xB2Ma71iqLwykhI4pztkiBDBZd/1UdR+OHNv/CW5hKFNnXskLpMHl50m4bIjb+0CA7mMJybaI8s0cfgYiJrGyAzjrBec= **********
-
-# github settings 新建ssh链接 添加id_rsa.pub 公钥
+ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQD0mh6M3yuvKUDK8kYrkFQ6zvmS/zktZvs0p6Vz5R0QGWcELdqj706Vx37fOWjYyTlKjuS3waWnHv8D0+2sAMbylkawv8Zkyco7llwsLpsil91A/gKDIe8icUZaVo6wIJogv5cI3RYnbWETE83xQeQjWSbHFmGUPV4HebloB26ZxwU5GsHONZxz7thrNdbTHfzxA2FS6Em3ETOyZjBWRFSxxW40sdpoqcIiwiEm+qqjKBOFufR+j08O7uBKzPG4rz+xxw/eGtXRNj0DjaR2JS/VcSjL11ZBlB/lNUpbcXHuq1VwxkPa1XQ6uPDnXnhjsq35sHkPwiMy6xLs/V8++0FcfLephDODiBW5yECQfIyGWrDcuQf1wXOSYGKokBULDgKvKG9cq4VpglEsHBH67FXRFgfeB/hxKmx2IU4xB2Ma71iqLwykhI4pztkiBDBZd/1UdR+OHNv/CW5hKFNnXskLpMHl50m4bIjb+0CA7mMJybaI8s0cfgYiJrGyAzjrBec= 2951121599@qq.com
 ```
+
+github 新建ssh链接 添加pub公钥
 
 ### 添加文件
 
@@ -51,16 +53,17 @@ git log
 
 ### Windows安装WSL 2 (Linux子系统)
 
+方式一：或者直接微软商店下载Ubuntu(简单)
+
+ Win+R : 输入 optionalfeatures，启用 适用于 Linux 的Windows子系统
+
+
+
+方式二：自己安装
+
 电脑规格要求 20H2
 
 参考链接: https://docs.microsoft.com/zh-cn/windows/wsl/install-win10
-
-```shell
-# 打开Windows的Linux子系统所在目录
-或者
-explorer.exe .
-打开这个目录 \\wsl$\Ubuntu\home\kiral\.ssh
-```
 
 步骤:
 
@@ -80,6 +83,8 @@ dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /nores
 ```shell
 sudo apt install zsh
 ```
+
+
 
 ### Linux换源
 
@@ -120,4 +125,9 @@ sudo apt upgrade
 ```
 
 
+
+```shell
+# 任务管理器
+sudo apt install htop
+```
 
